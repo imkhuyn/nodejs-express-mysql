@@ -8,17 +8,15 @@ module.exports = app => {
   app.post("/user/create", userControler.create);
 
   // Retrieve all user
-  app.get("/user/search", userControler.findAll);
+  app.post("/user/search", userControler.search);
 
   // Retrieve a single user with userId
-  app.get("/user/getByID/:userId", userControler.findOne);
+  app.post("/user/getByID", userControler.getByID);
 
   // Update a user with userId
-  app.put("/user/updateByID/:userId", userControler.update);
+  app.post("/user/updateByID", userControler.updateByID);
 
   // Delete a user with userId
-  app.delete("/user/deleteByID/:userId", userControler.delete);
+  app.post("/user/deleteByID", userControler.deleteByID);
 
-  // Delete all user
-  app.delete("/user/deleteAll", userControler.deleteAll);
 };

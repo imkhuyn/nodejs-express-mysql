@@ -1,18 +1,19 @@
 const database = require("./db.js");
 
 // constructor
-const User = function (User) {
-  this.mail = User.email;
-  this.fullName = User.fullName;
-  this.password = User.password;
-  this.age = User.age;
-  this.gender = User.gender;
-  this.birthDate = User.birthDate;
-  this.address = User.address;
-  this.avatar = User.avatar;
-  this.role = User.role;
-  this.status = User.status;
-  this.timeCreated = User.timeCreated
+const User = function (user) {
+  this.email = user.email;
+  this.fullName = user.fullName;
+  this.password = user.password;
+  this.age = user.age;
+  this.gender = user.gender;
+  this.birthDate = user.birthDate;
+  this.address = user.address;
+  this.avatar = user.avatar;
+  this.role = user.role;
+  this.phone = user.phone;
+  this.status = user.status;
+  this.timeCreated = user.timeCreated
 };
 
 User.login = (data, result) => {
@@ -38,17 +39,15 @@ User.login = (data, result) => {
 }
 
 User.create = (newUser, result) => {
-  database.query("INSERT INTO User SET ?", newUser, (err, res) => {
+  let sql = `INSERT INTO User SET ?`;
+  console.log(sql);
+  database.query(sql, newUser, (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(err, null);
       return;
     }
 
-    console.log("created User: ", {
-      id: res.insertId,
-      ...newUser
-    });
     result(null, {
       id: res.insertId,
       ...newUser
@@ -56,8 +55,10 @@ User.create = (newUser, result) => {
   });
 };
 
-User.findById = (UserId, result) => {
-  database.query(`SELECT * FROM User WHERE id = ${UserId}`, (err, res) => {
+User.getByID = (userID, result) => {
+  let sql = `SELECT * FROM User WHERE id = '${userID}' AND status != 'inactive'`;
+  console.log(sql);
+  database.query(sql, (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(err, null);
@@ -65,7 +66,6 @@ User.findById = (UserId, result) => {
     }
 
     if (res.length) {
-      console.log("found User: ", res[0]);
       result(null, res[0]);
       return;
     }
@@ -77,7 +77,7 @@ User.findById = (UserId, result) => {
   });
 };
 
-User.getAll = result => {
+User.search = result => {
   database.query("SELECT * FROM User", (err, res) => {
     if (err) {
       console.log("error: ", err);
@@ -90,42 +90,46 @@ User.getAll = result => {
   });
 };
 
-User.updateById = (id, User, result) => {
-  database.query(
-    "UPDATE User SET email = ?, name = ?, active = ? WHERE id = ?",
-    [User.email, User.name, User.active, id],
-    (err, res) => {
-      if (err) {
-        console.log("error: ", err);
-        result(null, err);
-        return;
-      }
-
-      if (res.affectedRows == 0) {
-        // not found User with the id
-        result({
-          kind: "not_found"
-        }, null);
-        return;
-      }
-
-      console.log("updated User: ", {
-        id: id,
-        ...User
-      });
-      result(null, {
-        id: id,
-        ...User
-      });
-    }
-  );
-};
-
-User.remove = (id, result) => {
-  database.query("DELETE FROM User WHERE id = ?", id, (err, res) => {
+User.updateByID = (data, result) => {
+  let setSQL = ``;
+  if (data.email) {
+    setSQL = setSQL + ` email = '${data.email}',`;
+  }
+  if (data.fullName) {
+    setSQL = setSQL + ` fullName = '${data.fullName}',`;
+  }
+  if (data.password) {
+    setSQL = setSQL + ` password = '${data.password}',`;
+  }
+  if (data.phone) {
+    setSQL = setSQL + ` phone = '${data.phone}',`;
+  }
+  if (data.age) {
+    setSQL = setSQL + ` age = '${data.age}',`;
+  }
+  if (data.gender) {
+    setSQL = setSQL + ` gender = '${data.gender}',`;
+  }
+  if (data.birthDate) {
+    setSQL = setSQL + ` birthDate = '${data.birthDate}',`;
+  }
+  if (data.address) {
+    setSQL = setSQL + ` address = '${data.address}',`;
+  }
+  if (data.avatar) {
+    setSQL = setSQL + ` avatar = '${data.avatar}',`;
+  }
+  if (data.role) {
+    setSQL = setSQL + ` role = '${data.role}',`;
+  }
+  let time = new Date().getTime();
+  setSQL = setSQL + ` timeModified = ${time}`
+  let sql = `UPDATE User SET ${setSQL} WHERE id = ${data.id}`;
+  console.log(sql);
+  database.query(sql, (err, res) => {
     if (err) {
       console.log("error: ", err);
-      result(null, err);
+      result(err, null);
       return;
     }
 
@@ -137,21 +141,34 @@ User.remove = (id, result) => {
       return;
     }
 
-    console.log("deleted User with id: ", id);
-    result(null, res);
+    if (res) {
+      result(null, res);
+      return;
+    }
   });
 };
 
-User.removeAll = result => {
-  database.query("DELETE FROM User", (err, res) => {
+User.deleteByID = (userID, result) => {
+  let sql = `UPDATE User SET status = 'inactive' WHERE id = ${userID}`;
+  database.query(sql, (err, res) => {
     if (err) {
       console.log("error: ", err);
-      result(null, err);
+      result(err, null);
       return;
     }
 
-    console.log(`deleted ${res.affectedRows} User`);
-    result(null, res);
+    if (res.affectedRows == 0) {
+      // not found User with the id
+      result({
+        kind: "not_found"
+      }, null);
+      return;
+    }
+
+    if (res) {
+      result(null, res);
+      return;
+    }
   });
 };
 

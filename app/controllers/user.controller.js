@@ -40,7 +40,7 @@ exports.create = (req, res) => {
   }
 
   // Create a User
-  const user = new User({
+  const user = new UserModel({
     email: req.body.email,
     fullName: req.body.fullName,
     password: req.body.password,
@@ -49,7 +49,8 @@ exports.create = (req, res) => {
     birthDate: req.body.birthDate,
     address: req.body.address,
     avatar: req.body.avatar,
-    role: req.body.role,
+    role: 'user',
+    phone: req.body.phone,
     status: 'active',
     timeCreated: new Date().getTime()
   });
@@ -58,15 +59,19 @@ exports.create = (req, res) => {
   UserModel.create(user, (err, data) => {
     if (err)
       res.status(500).send({
+        status: 500,
         message: err.message || "Some error occurred while creating the User."
       });
-    else res.send(data);
+    else res.send({
+      status: 200,
+      data: data
+    });
   });
 };
 
 // Retrieve all User from the database.
-exports.findAll = (req, res) => {
-  UserModel.getAll((err, data) => {
+exports.search = (req, res) => {
+  UserModel.search((err, data) => {
     if (err)
       res.status(500).send({
         message: err.message || "Some error occurred while retrieving User."
@@ -75,25 +80,31 @@ exports.findAll = (req, res) => {
   });
 };
 
-// Find a single User with a UserId
-exports.findOne = (req, res) => {
-  UserModel.findById(req.params.UserId, (err, data) => {
+// Find a single User with a userID
+exports.getByID = (req, res) => {
+  UserModel.getByID(req.body.userID, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
         res.status(404).send({
-          message: `Not found User with id ${req.params.UserId}.`
+          status: 404,
+          message: `Not found User with id ${req.params.userID}.`
         });
       } else {
         res.status(500).send({
-          message: "Error retrieving User with id " + req.params.UserId
+          status: 500,
+          message: "Error retrieving User with id " + req.params.userID
         });
       }
-    } else res.send(data);
+    } else res.send({
+      status: 200,
+      message: `Get data successfully !`,
+      data: data
+    });
   });
 };
 
-// Update a User identified by the UserId in the request
-exports.update = (req, res) => {
+// Update a User identified by the userID in the request
+exports.updateByID = (req, res) => {
   // Validate Request
   if (!req.body) {
     res.status(400).send({
@@ -101,55 +112,44 @@ exports.update = (req, res) => {
     });
   }
 
-  console.log(req.body);
-
-  UserModel.updateById(
-    req.params.UserId,
-    new User(req.body),
-    (err, data) => {
-      if (err) {
-        if (err.kind === "not_found") {
-          res.status(404).send({
-            message: `Not found User with id ${req.params.UserId}.`
-          });
-        } else {
-          res.status(500).send({
-            message: "Error updating User with id " + req.params.UserId
-          });
-        }
-      } else res.send(data);
-    }
-  );
-};
-
-// Delete a User with the specified UserId in the request
-exports.delete = (req, res) => {
-  UserModel.remove(req.params.UserId, (err, data) => {
+  UserModel.updateByID(req.body, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
         res.status(404).send({
-          message: `Not found User with id ${req.params.UserId}.`
+          status: 404,
+          message: `Not found User !`
         });
       } else {
         res.status(500).send({
-          message: "Could not delete User with id " + req.params.UserId
+          status: 500,
+          message: err.message || "Some error occurred while creating the User."
         });
       }
     } else res.send({
-      message: `User was deleted successfully!`
+      status: 200,
+      message: `Updated successfully !`,
     });
   });
 };
 
-// Delete all User from the database.
-exports.deleteAll = (req, res) => {
-  UserModel.removeAll((err, data) => {
-    if (err)
-      res.status(500).send({
-        message: err.message || "Some error occurred while removing all User."
-      });
-    else res.send({
-      message: `All User were deleted successfully!`
+// Delete a User with the specified userID in the request
+exports.deleteByID = (req, res) => {
+  UserModel.deleteByID(req.params.userID, (err, data) => {
+    if (err) {
+      if (err.kind === "not_found") {
+        res.status(404).send({
+          status: 404,
+          message: `Not found User !`
+        });
+      } else {
+        res.status(500).send({
+          status: 500,
+          message: `Could not delete User !`
+        });
+      }
+    } else res.send({
+      status: 200,
+      message: `User was deleted successfully!`
     });
   });
 };
