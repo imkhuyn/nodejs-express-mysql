@@ -1,21 +1,19 @@
 module.exports = app => {
-  const timeLine = require("../controllers/timeLine.controller.js");
+  const timeLineControler = require("../controllers/time-line.controller.js");
 
   // Create a new timeLine
-  app.post("/timeLine/create", timeLine.create);
+  app.post("/timeLine/create", timeLineControler.create);
 
   // Retrieve all timeLine
-  app.get("/timeLine/search", timeLine.findAll);
+  app.post("/timeLine/search", timeLineControler.search);
 
-  // Retrieve a single timeLine with timeLineId
-  app.get("/timeLine/getByID/:timeLineId", timeLine.findOne);
+  // Retrieve a single timeLine with userId
+  app.post("/timeLine/getByUserID", timeLineControler.getByUserID);
 
-  // Update a timeLine with timeLineId
-  app.put("/timeLine/updateByID/:timeLineId", timeLine.update);
+  // Update a timeLine with userId
+  app.post("/timeLine/updateByID", timeLineControler.updateByID);
 
-  // Delete a timeLine with timeLineId
-  app.delete("/timeLine/deleteByID/:timeLineId", timeLine.delete);
+  // Delete a timeLine with userId
+  app.post("/timeLine/deleteByID", timeLineControler.deleteByID);
 
-  // Delete all timeLine
-  app.delete("/timeLine/deleteAll", timeLine.deleteAll);
 };

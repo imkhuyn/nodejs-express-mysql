@@ -64,7 +64,8 @@ exports.create = (req, res) => {
       });
     else res.send({
       status: 200,
-      data: data
+      data: data,
+      message: 'Created successfully !'
     });
   });
 };

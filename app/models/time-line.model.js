@@ -1,27 +1,35 @@
-const sql = require("./db.js");
+const database = require("./db.js");
 
 // constructor
-const TimeLine = function(User) {
-  this.email = User.email;
-  this.name = User.name;
-  this.active = User.active;
+const TimeLine = function (timeLine) {
+  this.checkInTime = timeLine.checkInTime;
+  this.checkOutTime = timeLine.checkOutTime;
+  this.userID = timeLine.userID;
+  this.status = timeLine.status;
+  this.timeCreated = timeLine.timeCreated
 };
 
-User.create = (newUser, result) => {
-  sql.query("INSERT INTO User SET ?", newUser, (err, res) => {
+TimeLine.create = (newTimeLine, result) => {
+  let sql = `INSERT INTO TimeLine SET ?`;
+  console.log(sql);
+  database.query(sql, newTimeLine, (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(err, null);
       return;
     }
 
-    console.log("created User: ", { id: res.insertId, ...newUser });
-    result(null, { id: res.insertId, ...newUser });
+    result(null, {
+      id: res.insertId,
+      ...newTimeLine
+    });
   });
 };
 
-User.findById = (UserId, result) => {
-  sql.query(`SELECT * FROM User WHERE id = ${UserId}`, (err, res) => {
+TimeLine.getByUserID = (userID, result) => {
+  let sql = `SELECT * FROM TimeLine WHERE userID = '${userID}' AND status != 'inactive'`;
+  console.log(sql);
+  database.query(sql, (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(err, null);
@@ -29,82 +37,83 @@ User.findById = (UserId, result) => {
     }
 
     if (res.length) {
-      console.log("found User: ", res[0]);
       result(null, res[0]);
       return;
     }
 
-    // not found User with the id
-    result({ kind: "not_found" }, null);
+    // not found TimeLine with the id
+    result({
+      kind: "not_found"
+    }, null);
   });
 };
 
-User.getAll = result => {
-  sql.query("SELECT * FROM User", (err, res) => {
+TimeLine.search = result => {
+  database.query("SELECT * FROM TimeLine", (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(null, err);
       return;
     }
 
-    console.log("User: ", res);
+    console.log("TimeLine: ", res);
     result(null, res);
   });
 };
 
-User.updateById = (id, User, result) => {
-  sql.query(
-    "UPDATE User SET email = ?, name = ?, active = ? WHERE id = ?",
-    [User.email, User.name, User.active, id],
-    (err, res) => {
-      if (err) {
-        console.log("error: ", err);
-        result(null, err);
-        return;
-      }
-
-      if (res.affectedRows == 0) {
-        // not found User with the id
-        result({ kind: "not_found" }, null);
-        return;
-      }
-
-      console.log("updated User: ", { id: id, ...User });
-      result(null, { id: id, ...User });
-    }
-  );
-};
-
-User.remove = (id, result) => {
-  sql.query("DELETE FROM User WHERE id = ?", id, (err, res) => {
+TimeLine.updateByID = (data, result) => {
+  let setSQL = ``;
+  if (data.checkOutTime) {
+    setSQL = setSQL + ` checkOutTime = '${data.checkOutTime}',`;
+  }
+  let time = new Date().getTime();
+  setSQL = setSQL + ` timeModified = ${time}`
+  let sql = `UPDATE TimeLine SET ${setSQL} WHERE id = ${data.id}`;
+  console.log(sql);
+  database.query(sql, (err, res) => {
     if (err) {
       console.log("error: ", err);
-      result(null, err);
+      result(err, null);
       return;
     }
 
     if (res.affectedRows == 0) {
-      // not found User with the id
-      result({ kind: "not_found" }, null);
+      // not found TimeLine with the id
+      result({
+        kind: "not_found"
+      }, null);
       return;
     }
 
-    console.log("deleted User with id: ", id);
-    result(null, res);
+    if (res) {
+      result(null, res);
+      return;
+    }
   });
 };
 
-User.removeAll = result => {
-  sql.query("DELETE FROM User", (err, res) => {
+TimeLine.deleteByID = (userID, result) => {
+  let sql = `UPDATE TimeLine SET status = 'inactive' WHERE id = ${userID}`;
+  database.query(sql, (err, res) => {
     if (err) {
       console.log("error: ", err);
-      result(null, err);
+      result(err, null);
       return;
     }
 
-    console.log(`deleted ${res.affectedRows} User`);
-    result(null, res);
+    if (res.affectedRows == 0) {
+      // not found TimeLine with the id
+      result({
+        kind: "not_found"
+      }, null);
+      return;
+    }
+
+    if (res) {
+      result(null, res);
+      return;
+    }
   });
 };
 
-module.exports = User;
+module.exports = TimeLine;
