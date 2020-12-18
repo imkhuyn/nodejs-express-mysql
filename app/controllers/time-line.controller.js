@@ -48,17 +48,10 @@ exports.search = (req, res) => {
 exports.getByUserID = (req, res) => {
   TimeLineModel.getByUserID(req.body.userID, (err, data) => {
     if (err) {
-      if (err.kind === "not_found") {
-        res.status(404).send({
-          status: 404,
-          message: `Not found TimeLine with id ${req.params.userID}.`
-        });
-      } else {
-        res.status(500).send({
-          status: 500,
-          message: "Error retrieving TimeLine with id " + req.params.userID
-        });
-      }
+      res.status(500).send({
+        status: 500,
+        message: "Error retrieving TimeLine ! "
+      });
     } else res.send({
       status: 200,
       message: `Get data successfully !`,

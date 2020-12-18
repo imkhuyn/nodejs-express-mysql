@@ -88,12 +88,12 @@ exports.getByID = (req, res) => {
       if (err.kind === "not_found") {
         res.status(404).send({
           status: 404,
-          message: `Not found User with id ${req.params.userID}.`
+          message: `Not found User !`
         });
       } else {
         res.status(500).send({
           status: 500,
-          message: "Error retrieving User with id " + req.params.userID
+          message: "Error retrieving User !"
         });
       }
     } else res.send({

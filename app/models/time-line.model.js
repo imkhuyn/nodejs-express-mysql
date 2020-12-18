@@ -42,15 +42,10 @@ TimeLine.getByUserID = (userID, result) => {
       return;
     }
 
-    if (res.length) {
-      result(null, res[0]);
+    if (res) {
+      result(null, res);
       return;
     }
-
-    // not found TimeLine with the id
-    result({
-      kind: "not_found"
-    }, null);
   });
 };
 
