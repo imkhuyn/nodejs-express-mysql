@@ -44,6 +44,21 @@ exports.search = (req, res) => {
   });
 };
 
+exports.getHistory = (req, res) => {
+  TimeLineModel.getHistory(req.body, (err, data) => {
+    if (err) {
+      res.status(500).send({
+        status: 500,
+        message: "Error retrieving TimeLine ! "
+      });
+    } else res.send({
+      status: 200,
+      message: `Get data successfully !`,
+      data: data
+    });
+  });
+};
+
 // Find a single TimeLine with a userID
 exports.getByUserID = (req, res) => {
   TimeLineModel.getByUserID(req.body.userID, (err, data) => {

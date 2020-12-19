@@ -26,8 +26,15 @@ TimeLine.create = (newTimeLine, result) => {
   });
 };
 
-TimeLine.adminGetHistory = (userID, result) => {
-  let sql = `SELECT * FROM TimeLine WHERE userID = '${userID}' AND ${start.getTime()} <= checkInTime <= ${end.getTime()} AND status != 'inactive'`;
+TimeLine.getHistory = (data, result) => {
+  let sql = `SELECT tl.*, u.fullName, u.email, u.phone, u.avatar 
+  FROM TimeLine tl 
+  INNER JOIN User u ON tl.userID = u.id AND u.status != 'inactive'
+  WHERE tl.status != 'inactive'`;
+  if (data.role == 'user') {
+    sql = sql + ` AND u.id = ${data.userID}`;
+  }
+  sql = sql + ` ORDER BY tl.timeCreated DESC`;
   console.log(sql);
   database.query(sql, (err, res) => {
     if (err) {

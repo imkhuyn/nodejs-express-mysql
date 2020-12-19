@@ -10,6 +10,8 @@ module.exports = app => {
   // Retrieve a single timeLine with userId
   app.post("/timeLine/getByUserID", timeLineControler.getByUserID);
 
+  app.post("/timeLine/getHistory", timeLineControler.getHistory);
+
   // Update a timeLine with userId
   app.post("/timeLine/updateByID", timeLineControler.updateByID);
 
