@@ -57,7 +57,7 @@ TimeLine.getByUserID = (userID, result) => {
   let end = new Date();
   end.setHours(23, 59, 59, 999);
 
-  let sql = `SELECT * FROM TimeLine WHERE userID = '${userID}' AND ${start.getTime()} >= checkInTime >= ${end.getTime()} AND status != 'inactive'`;
+  let sql = `SELECT * FROM TimeLine WHERE userID = '${userID}' AND ${start.getTime()} <= checkInTime <= ${end.getTime()} AND status != 'inactive'`;
   console.log(sql);
   database.query(sql, (err, res) => {
     if (err) {
