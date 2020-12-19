@@ -26,6 +26,23 @@ TimeLine.create = (newTimeLine, result) => {
   });
 };
 
+TimeLine.adminGetHistory = (userID, result) => {
+  let sql = `SELECT * FROM TimeLine WHERE userID = '${userID}' AND ${start.getTime()} <= checkInTime <= ${end.getTime()} AND status != 'inactive'`;
+  console.log(sql);
+  database.query(sql, (err, res) => {
+    if (err) {
+      console.log("error: ", err);
+      result(err, null);
+      return;
+    }
+
+    if (res) {
+      result(null, res);
+      return;
+    }
+  });
+};
+
 TimeLine.getByUserID = (userID, result) => {
   let start = new Date();
   start.setHours(0, 0, 0, 0);
@@ -33,7 +50,7 @@ TimeLine.getByUserID = (userID, result) => {
   let end = new Date();
   end.setHours(23, 59, 59, 999);
 
-  let sql = `SELECT * FROM TimeLine WHERE userID = '${userID}' AND ${start.getTime()} <= checkInTime <= ${end.getTime()} AND status != 'inactive'`;
+  let sql = `SELECT * FROM TimeLine WHERE userID = '${userID}' AND ${start.getTime()} => checkInTime => ${end.getTime()} AND status != 'inactive'`;
   console.log(sql);
   database.query(sql, (err, res) => {
     if (err) {
