@@ -11,6 +11,8 @@ exports.create = (req, res) => {
 
   // Create a TimeLine
   const timeLine = new TimeLineModel({
+    reason: req.body.reason,
+    note: req.body.note,
     checkInTime: req.body.checkInTime,
     checkOutTime: req.body.checkOutTime,
     userID: req.body.userID,
