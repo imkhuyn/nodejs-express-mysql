@@ -2,6 +2,11 @@ const database = require("./db.js");
 
 // constructor
 const TimeLine = function (timeLine) {
+  this.reason = timeLine.reason;
+  this.note = timeLine.note;
+  this.fromDate = timeLine.fromDate;
+  this.toDate = timeLine.toDate;
+  this.onDate = timeLine.onDate;
   this.checkInTime = timeLine.checkInTime;
   this.checkOutTime = timeLine.checkOutTime;
   this.userID = timeLine.userID;
