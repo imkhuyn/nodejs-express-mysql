@@ -40,7 +40,7 @@ exports.create = (req, res) => {
 
 // Retrieve all TimeLine from the database.
 exports.search = (req, res) => {
-  TimeLineModel.search((err, data) => {
+  TimeLineModel.search(req.body, (err, data) => {
     if (err)
       res.status(500).send({
         message: err.message || "Some error occurred while retrieving TimeLine."

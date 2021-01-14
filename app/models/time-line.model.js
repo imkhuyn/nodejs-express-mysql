@@ -56,13 +56,24 @@ TimeLine.getHistory = (data, result) => {
 };
 
 TimeLine.getByUserID = (userID, result) => {
+  let toDay = new Date().getTime();
+
   let start = new Date();
   start.setHours(0, 0, 0, 0);
 
   let end = new Date();
   end.setHours(23, 59, 59, 999);
 
-  let sql = `SELECT * FROM TimeLine WHERE userID = '${userID}' AND ${start.getTime()} <= checkInTime AND ${end.getTime()} >= checkInTime AND status != 'inactive'`;
+  let sql = `SELECT tl.*
+            FROM
+              TimeLine tl 
+            WHERE tl.userID = ${userID}
+                AND tl.status != 'inactive'
+                AND (tl.checkInTime IS NOT NULL AND tl.checkOutTime IS NOT NULL AND tl.checkInTime <= ${start} AND tl.checkOutTime >= ${end})
+                  OR 
+                    (tl.fromDate IS NOT NULL AND tl.toDate IS NOT NULL AND tl.fromDate <= ${toDay} AND tl.toDate >= ${toDay})
+                  OR 
+                    (tl.onDate IS NOT NULL AND tl.onDate = ${start})`;
   console.log(sql);
   database.query(sql, (err, res) => {
     if (err) {
