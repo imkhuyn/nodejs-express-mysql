@@ -58,35 +58,40 @@ TimeLine.getHistory = (data, result) => {
 TimeLine.getByUserID = (userID, result) => {
   let toDay = new Date().getTime();
 
-  let start = new Date();
-  start.setHours(0, 0, 0, 0);
+  var d = new Date();
+  var year = d.getUTCFullYear();
+  var month = d.getUTCMonth();
+  var day = d.getUTCDate();
 
-  let end = new Date();
-  end.setHours(23, 59, 59, 999);
+  var startHour = Date.UTC(year, month, day, 0, 0, 0, 0);
+  var endHour = startHour + 86400000;
 
-  let sql = `SELECT tl.*
+  setTimeout(() => {
+    let sql = `SELECT tl.*
             FROM
               TimeLine tl 
             WHERE tl.userID = ${userID}
                 AND tl.status != 'inactive'
-                AND (tl.checkInTime IS NOT NULL AND tl.checkOutTime IS NOT NULL AND tl.checkInTime <= ${start} AND tl.checkOutTime >= ${end})
+                AND (tl.checkInTime IS NOT NULL AND tl.checkOutTime IS NOT NULL AND tl.checkInTime <= ${startHour} AND tl.checkOutTime >= ${endHour})
                   OR 
                     (tl.fromDate IS NOT NULL AND tl.toDate IS NOT NULL AND tl.fromDate <= ${toDay} AND tl.toDate >= ${toDay})
                   OR 
-                    (tl.onDate IS NOT NULL AND tl.onDate = ${start})`;
-  console.log(sql);
-  database.query(sql, (err, res) => {
-    if (err) {
-      console.log("error: ", err);
-      result(err, null);
-      return;
-    }
+                    (tl.onDate IS NOT NULL AND tl.onDate = ${startHour})`;
+    console.log(sql);
+    database.query(sql, (err, res) => {
+      if (err) {
+        console.log("error: ", err);
+        result(err, null);
+        return;
+      }
 
-    if (res) {
-      result(null, res);
-      return;
-    }
-  });
+      if (res) {
+        result(null, res);
+        return;
+      }
+    });
+  }, 500);
+
 };
 
 TimeLine.search = result => {
