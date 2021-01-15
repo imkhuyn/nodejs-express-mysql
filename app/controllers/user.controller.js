@@ -72,7 +72,7 @@ exports.create = (req, res) => {
 
 // Retrieve all User from the database.
 exports.search = (req, res) => {
-  UserModel.search((err, data) => {
+  UserModel.search(req.body, (err, data) => {
     if (err)
       res.status(500).send({
         message: err.message || "Some error occurred while retrieving User."
