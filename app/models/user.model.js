@@ -80,7 +80,7 @@ User.getByID = (userID, result) => {
 User.search = (condition, result) => {
   let sql = `SELECT * FROM User WHERE status != 'inactive'`;
   if (condition.role && condition.role == 'admin') {
-    sql = sql + ` AND role = user`
+    sql = sql + ` AND role = '${condition.role}'`
   }
   database.query(sql, (err, res) => {
     if (err) {
