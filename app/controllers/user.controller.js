@@ -77,7 +77,12 @@ exports.search = (req, res) => {
       res.status(500).send({
         message: err.message || "Some error occurred while retrieving User."
       });
-    else res.send(data);
+    else {
+      data.forEach(element => {
+        delete element.password;
+      });
+      res.send(data)
+    };
   });
 };
 
