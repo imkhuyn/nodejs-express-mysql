@@ -64,7 +64,7 @@ TimeLine.getByUserID = (userID, result) => {
   var day = d.getUTCDate();
 
   var startHour = Date.UTC(year, month, day, 0, 0, 0, 0);
-  var endHour = startHour + 86400000;
+  var endHour = startHour + 86400000 - 1;
 
   setTimeout(() => {
     let sql = `SELECT tl.*
@@ -72,7 +72,7 @@ TimeLine.getByUserID = (userID, result) => {
               TimeLine tl 
             WHERE tl.userID = ${userID}
                 AND tl.status != 'inactive'
-                AND (tl.checkInTime IS NOT NULL AND tl.checkOutTime IS NOT NULL AND tl.checkInTime <= ${startHour} AND tl.checkOutTime >= ${endHour})
+                AND (tl.checkInTime IS NOT NULL AND ${startHour} <= tl.checkInTime AND ${endHour} >= tl.checkInTime)
                   OR 
                     (tl.fromDate IS NOT NULL AND tl.toDate IS NOT NULL AND tl.fromDate <= ${toDay} AND tl.toDate >= ${toDay})
                   OR 
