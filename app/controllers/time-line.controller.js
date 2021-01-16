@@ -66,17 +66,47 @@ exports.getHistory = (req, res) => {
 
 // Find a single TimeLine with a userID
 exports.getByUserID = (req, res) => {
+  let dTS = new Date().getTime();
+  let d = new Date();
+  let today = d.getDate().toString() + (d.getMonth() + 1).toString() + d.getFullYear().toString();
+  console.log('----- today : ', today);
   TimeLineModel.getByUserID(req.body.userID, (err, data) => {
     if (err) {
       res.status(500).send({
         status: 500,
         message: "Error retrieving TimeLine ! "
       });
-    } else res.send({
-      status: 200,
-      message: `Get data successfully !`,
-      data: data
-    });
+    } else {
+      let ressult = [];
+      data.forEach(element => {
+        if (element.reason == null && element.checkInTime && this.convertTimestamp(element.checkInTime) == today) {
+          console.log(1);
+          ressult.push(element);
+        }
+        if (element.reason == 1 && element.fromDate && element.toDate) {
+          console.log(2);
+          if (this.convertTimestamp(element.fromDate) == today) {
+            console.log(2.1);
+            ressult.push(element);
+          } else if (this.convertTimestamp(element.toDate) == today) {
+            console.log(2.2);
+            ressult.push(element);
+          } else if (element.fromDate <= dTS && dTS <= element.toDate) {
+            console.log(2.3);
+            ressult.push(element);
+          }
+        }
+        if (element.reason = 2 && this.convertTimestamp(element.onDate) == today) {
+          console.log(3);
+          ressult.push(element);
+        }
+      });
+      res.send({
+        status: 200,
+        message: `Get data successfully !`,
+        data: ressult
+      })
+    };
   });
 };
 
@@ -130,3 +160,11 @@ exports.deleteByID = (req, res) => {
     });
   });
 };
+
+exports.convertTimestamp = (timestamp) => {
+  console.log('------ timestamp : ', timestamp);
+  let d = new Date(timestamp);
+  let today = d.getDate().toString() + (d.getMonth() + 1).toString() + d.getFullYear().toString();
+  console.log(today);
+  return Number(today);
+}

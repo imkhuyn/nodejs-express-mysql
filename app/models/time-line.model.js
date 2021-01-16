@@ -71,12 +71,7 @@ TimeLine.getByUserID = (userID, result) => {
             FROM
               TimeLine tl 
             WHERE tl.userID = ${userID}
-                AND tl.status != 'inactive'
-                AND (tl.checkInTime IS NOT NULL AND ${startHour} <= tl.checkInTime AND ${endHour} >= tl.checkInTime)
-                  OR 
-                    (tl.fromDate IS NOT NULL AND tl.toDate IS NOT NULL AND tl.fromDate <= ${toDay} AND tl.toDate >= ${toDay})
-                  OR 
-                    (tl.onDate IS NOT NULL AND tl.onDate = ${startHour})`;
+                AND tl.status != 'inactive'`;
     console.log(sql);
     database.query(sql, (err, res) => {
       if (err) {
