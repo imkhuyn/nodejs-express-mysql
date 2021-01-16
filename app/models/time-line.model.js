@@ -89,8 +89,24 @@ TimeLine.getByUserID = (userID, result) => {
 
 };
 
-TimeLine.search = result => {
-  database.query("SELECT * FROM TimeLine", (err, res) => {
+TimeLine.search = (data, result) => {
+  let sql = `SELECT tl.*, u.fullName, u.avatar, u.email, u.address 
+  FROM TimeLine tl
+  INNER JOIN User u ON u.id = tl.userID AND u.status != 'inactive'
+  WHERE tl.status != 'inactive' `;
+  if (data.role && data.role == 'admin') {
+    sql = sql + `AND u.role = 'user' `
+  }
+  if (data.role && data.role == 'user') {
+    sql = sql + `AND tl.userID = ${data.userID} `
+  }
+  if (data.fromDate && data.fromDate != null && data.fromDate != undefined) {
+    sql = sql + `AND tl.timeCreated >= ${data.fromDate} `
+  }
+  if (data.toDate && data.toDate != null && data.toDate != undefined) {
+    sql = sql + `AND tl.timeCreated <= ${data.toDate} `
+  }
+  database.query(sql, (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(null, err);

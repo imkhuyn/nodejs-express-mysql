@@ -140,7 +140,7 @@ exports.updateByID = (req, res) => {
 
 // Delete a User with the specified userID in the request
 exports.deleteByID = (req, res) => {
-  UserModel.deleteByID(req.params.userID, (err, data) => {
+  UserModel.deleteByID(req.body.userID, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
         res.status(404).send({
