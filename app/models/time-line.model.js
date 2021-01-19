@@ -32,12 +32,22 @@ TimeLine.create = (newTimeLine, result) => {
 };
 
 TimeLine.getHistory = (data, result) => {
+  let today = new Date().getTime();
   let sql = `SELECT tl.*, u.fullName, u.email, u.phone, u.avatar 
   FROM TimeLine tl 
   INNER JOIN User u ON tl.userID = u.id AND u.status != 'inactive'
   WHERE tl.status != 'inactive'`;
   if (data.role == 'user') {
     sql = sql + ` AND u.id = ${data.userID}`;
+  }
+  if (payload.fromDate != null && payload.fromDate != undefined && payload.fromDate != '' && !payload.toDate) {
+    sql = sql + ` AND tl.timeCreated >= ${payload.fromDate}`
+  }
+  if (payload.toDate != null && payload.toDate != undefined && payload.toDate != '' && !payload.fromDate) {
+    sql = sql + ` AND tl.timeCreated <= ${payload.fromDate}`
+  }
+  if (payload.fromDate != null && payload.fromDate != undefined && payload.fromDate != '' && payload.toDate != null && payload.toDate != undefined && payload.toDate != '') {
+    sql = sql + ` AND tl.timeCreated BETWEEN ${payload.fromDate} and ${payload.toDate}`
   }
   sql = sql + ` ORDER BY tl.timeCreated DESC`;
   console.log(sql);
