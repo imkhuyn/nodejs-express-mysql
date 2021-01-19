@@ -40,14 +40,14 @@ TimeLine.getHistory = (data, result) => {
   if (data.role == 'user') {
     sql = sql + ` AND u.id = ${data.userID}`;
   }
-  if (payload.fromDate != null && payload.fromDate != undefined && payload.fromDate != '' && !payload.toDate) {
-    sql = sql + ` AND tl.timeCreated >= ${payload.fromDate}`
+  if (data.fromDate != null && data.fromDate != undefined && data.fromDate != '' && !data.toDate) {
+    sql = sql + ` AND tl.timeCreated >= ${data.fromDate}`
   }
-  if (payload.toDate != null && payload.toDate != undefined && payload.toDate != '' && !payload.fromDate) {
-    sql = sql + ` AND tl.timeCreated <= ${payload.fromDate}`
+  if (data.toDate != null && data.toDate != undefined && data.toDate != '' && !data.fromDate) {
+    sql = sql + ` AND tl.timeCreated <= ${data.fromDate}`
   }
-  if (payload.fromDate != null && payload.fromDate != undefined && payload.fromDate != '' && payload.toDate != null && payload.toDate != undefined && payload.toDate != '') {
-    sql = sql + ` AND tl.timeCreated BETWEEN ${payload.fromDate} and ${payload.toDate}`
+  if (data.fromDate != null && data.fromDate != undefined && data.fromDate != '' && data.toDate != null && data.toDate != undefined && data.toDate != '') {
+    sql = sql + ` AND tl.timeCreated BETWEEN ${data.fromDate} and ${data.toDate}`
   }
   sql = sql + ` ORDER BY tl.timeCreated DESC`;
   console.log(sql);
